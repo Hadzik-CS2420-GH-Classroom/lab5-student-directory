@@ -94,7 +94,29 @@ void ProbingHashTable::print() const {
 // Review: CT11 Section 4
 //
 void ProbingHashTable::insert(const std::string& key, int value) {
-    // TODO 10: linear probing insert
+    if (static_cast<double>(size_ + 1) / capacity_ > MAX_LOAD_FACTOR) {
+        resize();
+    }
+
+    size_t index = hash(key);
+
+    while (true) {
+        if (table_[index].status == SlotStatus::EMPTY ||
+            table_[index].status == SlotStatus::DELETED) {
+            table_[index].key = key;
+            table_[index].value = value;
+            table_[index].status = SlotStatus::OCCUPIED;
+            ++size_;
+            return;
+        }
+
+        if (table_[index].key == key) {
+            table_[index].value = value;
+            return;
+        }
+
+        index = (index + 1) % capacity_;
+    }
 }
 
 // ---------------------------------------------------------------------------
@@ -110,8 +132,20 @@ void ProbingHashTable::insert(const std::string& key, int value) {
 // Review: CT11 Section 5
 //
 int* ProbingHashTable::search(const std::string& key) const {
-    // TODO 11: linear probing search
-    return nullptr;
+    size_t index = hash(key);
+
+    while (true) {
+        if (table_[index].status == SlotStatus::EMPTY) {
+            return nullptr;
+        }
+
+        if (table_[index].status == SlotStatus::OCCUPIED &&
+            table_[index].key == key) {
+            return &table_[index].value;
+        }
+
+        index = (index + 1) % capacity_;
+    }
 }
 
 // ---------------------------------------------------------------------------
@@ -132,8 +166,22 @@ int* ProbingHashTable::search(const std::string& key) const {
 // Review: CT11 Section 6
 //
 bool ProbingHashTable::remove(const std::string& key) {
-    // TODO 12: tombstone deletion
-    return false;
+    size_t index = hash(key);
+
+    while (true) {
+        if (table_[index].status == SlotStatus::EMPTY) {
+            return false;
+        }
+
+        if (table_[index].status == SlotStatus::OCCUPIED &&
+            table_[index].key == key) {
+            table_[index].status = SlotStatus::DELETED;
+            --size_;
+            return true;
+        }
+
+        index = (index + 1) % capacity_;
+    }
 }
 
 // ---------------------------------------------------------------------------
@@ -152,5 +200,17 @@ bool ProbingHashTable::remove(const std::string& key) {
 // Review: CT11 Section 8
 //
 void ProbingHashTable::resize() {
-    // TODO 13: grow table, rehash occupied entries, skip tombstones
+    int old_capacity = capacity_;
+    HashSlot* old_table = table_;
+
+    capacity_ = next_prime(old_capacity * 2);
+    table_ = new HashSlot[capacity_];
+    size_ = 0;
+
+    for (int i = 0; i < old_capacity; ++i) {
+        if (old_table[i].status == SlotStatus::OCCUPIED) {
+            insert(old_table[i].key, old_table[i].value);
+        }
+    }
+    delete[] old_table;
 }

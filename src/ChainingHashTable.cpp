@@ -41,7 +41,7 @@ int ChainingHashTable::next_prime(int n) {
 //
 ChainingHashTable::ChainingHashTable(int capacity)
     : size_(0), capacity_(capacity) {
-    // TODO 1: allocate the bucket array here
+    buckets_ = new ChainNode*[capacity_]();
 }
 
 // ---------------------------------------------------------------------------
@@ -56,7 +56,15 @@ ChainingHashTable::ChainingHashTable(int capacity)
 // Review: CT10 Section 2
 //
 ChainingHashTable::~ChainingHashTable() {
-    // TODO 2: delete all chains, then delete[] buckets_
+    for (int i = 0; i < capacity_; ++i) {
+        ChainNode* current = buckets_[i];
+        while (current != nullptr) {
+            ChainNode* temp = current;
+            current = current->next;
+            delete temp;
+        }
+    }
+    delete[] buckets_;
 }
 
 // ---------------------------------------------------------------------------
@@ -70,8 +78,11 @@ ChainingHashTable::~ChainingHashTable() {
 // Review: CT10 Section 3
 //
 size_t ChainingHashTable::hash(const std::string& key) const {
-    // TODO 3: implement multiply-and-add hash, then modulo
-    return 0;
+    size_t hash_value = 0;
+    for (char c : key) {
+        hash_value = hash_value * 31 + c;
+    }
+    return hash_value % capacity_;
 }
 
 // ---------------------------------------------------------------------------
@@ -88,7 +99,23 @@ size_t ChainingHashTable::hash(const std::string& key) const {
 // Review: CT10 Section 4
 //
 void ChainingHashTable::insert(const std::string& key, int value) {
-    // TODO 4: insert or update, then check load factor
+    size_t index = hash(key);
+
+    ChainNode* current = buckets_[index];
+    while (current != nullptr) {
+        if (current->key == key) {
+            current->value = value;
+            return;
+        }
+        current = current->next;
+    }
+
+    buckets_[index] = new ChainNode(key, value, buckets_[index]);
+    ++size_;
+
+    if (load_factor() > MAX_LOAD_FACTOR) {
+        resize();
+    }
 }
 
 // ---------------------------------------------------------------------------
@@ -102,7 +129,15 @@ void ChainingHashTable::insert(const std::string& key, int value) {
 // Review: CT10 Section 5
 //
 int* ChainingHashTable::search(const std::string& key) const {
-    // TODO 5: search the chain at the hashed bucket
+    size_t index = hash(key);
+
+    ChainNode* current = buckets_[index];
+    while (current != nullptr) {
+        if (current->key == key) {
+            return &current->value;
+        }
+        current = current->next;
+    }
     return nullptr;
 }
 
@@ -120,7 +155,25 @@ int* ChainingHashTable::search(const std::string& key) const {
 // Review: CT10 Section 6, CT8 trailing-pointer pattern
 //
 bool ChainingHashTable::remove(const std::string& key) {
-    // TODO 6: find and unlink the node, then delete it
+    size_t index = hash(key);
+
+    ChainNode* current = buckets_[index];
+    ChainNode* prev = nullptr;
+
+    while (current != nullptr) {
+        if (current->key == key) {
+            if (prev == nullptr) {
+                buckets_[index] = current->next;
+            } else {
+                prev->next = current->next;
+            }
+            delete current;
+            --size_;
+            return true;
+        }
+        prev = current;
+        current = current->next;
+    }
     return false;
 }
 
@@ -143,12 +196,27 @@ bool ChainingHashTable::remove(const std::string& key) {
 // Review: CT10 Section 7
 //
 double ChainingHashTable::load_factor() const {
-    // TODO 7a: return the load factor
-    return 0.0;
+    return static_cast<double>(size_) / capacity_;
 }
 
 void ChainingHashTable::resize() {
-    // TODO 7b: grow the table and rehash all entries
+    int old_capacity = capacity_;
+    ChainNode** old_buckets = buckets_;
+
+    capacity_ = next_prime(old_capacity * 2);
+    buckets_ = new ChainNode*[capacity_]();
+    size_ = 0;
+
+    for (int i = 0; i < old_capacity; ++i) {
+        ChainNode* current = old_buckets[i];
+        while (current != nullptr) {
+            insert(current->key, current->value);
+            ChainNode* temp = current;
+            current = current->next;
+            delete temp;
+        }
+    }
+    delete[] old_buckets;
 }
 
 // ---------------------------------------------------------------------------
@@ -167,5 +235,19 @@ void ChainingHashTable::resize() {
 // Review: CT10 Section 8
 //
 void ChainingHashTable::print() const {
-    // TODO 8: print each bucket's chain
+    for (int i = 0; i < capacity_; ++i) {
+        std::cout << "  [" << i << "]: ";
+        ChainNode* current = buckets_[i];
+        if (current == nullptr) {
+            std::cout << "empty";
+        }
+        while (current != nullptr) {
+            std::cout << "(" << current->key << ", " << current->value << ")";
+            if (current->next != nullptr) {
+                std::cout << " -> ";
+            }
+            current = current->next;
+        }
+        std::cout << "\n";
+    }
 }
