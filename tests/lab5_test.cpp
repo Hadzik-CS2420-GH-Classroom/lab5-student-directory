@@ -442,9 +442,11 @@ TEST(ProbingTest, ResizeClearsTombstones) {
     table.remove("bob");  // creates a tombstone
 
     // Force resize by inserting enough entries
+    // After remove: size=2, capacity=7. Need (size+1)/7 > 0.75 → size >= 5
     table.insert("dave", 92);
     table.insert("eve", 88);
-    table.insert("frank", 76);  // should trigger resize
+    table.insert("frank", 76);
+    table.insert("grace", 95);  // (5+1)/7 = 0.86 > 0.75 → triggers resize
 
     // After resize, tombstones should be cleared
     // and print should show no [deleted] entries
