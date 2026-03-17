@@ -1,0 +1,749 @@
+name: Autograding Tests
+on:
+  - push
+  - repository_dispatch
+permissions:
+  checks: write
+  actions: read
+  contents: read
+
+jobs:
+  run-autograding-tests:
+    runs-on: ubuntu-latest
+    if: github.actor != 'github-classroom[bot]'
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Build Project
+      continue-on-error: true
+      run: |
+        cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
+        cmake --build build --config Release
+
+    - name: Build Check
+      id: build
+      uses: classroom-resources/autograding-command-grader@v1
+      with:
+        test-name: Build Check
+        setup-command: ''
+        command: |
+          if [ -f build/run_tests ]; then
+            echo "Build successful"
+          else
+            echo "Build failed" && exit 1
+          fi
+        timeout: 10
+        max-score: 0
+
+    - name: "Chaining: Constructor Default Capacity (3 points)"
+      id: chain-ctor-default
+      uses: classroom-resources/autograding-command-grader@v1
+      with:
+        test-name: "Chaining: Constructor Default Capacity (3 points)"
+        setup-command: ''
+        command: |
+          if [ -f build/run_tests ]; then
+            cd build && ./run_tests --gtest_filter=ChainingTest.ConstructorDefaultCapacity
+          else
+            exit 1
+          fi
+        timeout: 10
+        max-score: 3
+
+    - name: "Chaining: Constructor Custom Capacity (2 points)"
+      id: chain-ctor-custom
+      uses: classroom-resources/autograding-command-grader@v1
+      with:
+        test-name: "Chaining: Constructor Custom Capacity (2 points)"
+        setup-command: ''
+        command: |
+          if [ -f build/run_tests ]; then
+            cd build && ./run_tests --gtest_filter=ChainingTest.ConstructorCustomCapacity
+          else
+            exit 1
+          fi
+        timeout: 10
+        max-score: 2
+
+    - name: "Chaining: Destructor Cleans Up Memory (3 points)"
+      id: chain-dtor
+      uses: classroom-resources/autograding-command-grader@v1
+      with:
+        test-name: "Chaining: Destructor Cleans Up Memory (3 points)"
+        setup-command: ''
+        command: |
+          if [ -f build/run_tests ]; then
+            cd build && ./run_tests --gtest_filter=ChainingTest.DestructorCleansUpMemory
+          else
+            exit 1
+          fi
+        timeout: 10
+        max-score: 3
+
+    - name: "Chaining: Destructor Empty Table (2 points)"
+      id: chain-dtor-empty
+      uses: classroom-resources/autograding-command-grader@v1
+      with:
+        test-name: "Chaining: Destructor Empty Table (2 points)"
+        setup-command: ''
+        command: |
+          if [ -f build/run_tests ]; then
+            cd build && ./run_tests --gtest_filter=ChainingTest.DestructorEmptyTable
+          else
+            exit 1
+          fi
+        timeout: 10
+        max-score: 2
+
+    - name: "Chaining: Hash Consistent Same Key (3 points)"
+      id: chain-hash-consistent
+      uses: classroom-resources/autograding-command-grader@v1
+      with:
+        test-name: "Chaining: Hash Consistent Same Key (3 points)"
+        setup-command: ''
+        command: |
+          if [ -f build/run_tests ]; then
+            cd build && ./run_tests --gtest_filter=ChainingTest.HashConsistentSameKey
+          else
+            exit 1
+          fi
+        timeout: 10
+        max-score: 3
+
+    - name: "Chaining: Hash Within Bounds (3 points)"
+      id: chain-hash-bounds
+      uses: classroom-resources/autograding-command-grader@v1
+      with:
+        test-name: "Chaining: Hash Within Bounds (3 points)"
+        setup-command: ''
+        command: |
+          if [ -f build/run_tests ]; then
+            cd build && ./run_tests --gtest_filter=ChainingTest.HashWithinBounds
+          else
+            exit 1
+          fi
+        timeout: 10
+        max-score: 3
+
+    - name: "Chaining: Hash Different Keys (4 points)"
+      id: chain-hash-different
+      uses: classroom-resources/autograding-command-grader@v1
+      with:
+        test-name: "Chaining: Hash Different Keys (4 points)"
+        setup-command: ''
+        command: |
+          if [ -f build/run_tests ]; then
+            cd build && ./run_tests --gtest_filter=ChainingTest.HashDifferentKeys
+          else
+            exit 1
+          fi
+        timeout: 10
+        max-score: 4
+
+    - name: "Chaining: Insert Single Entry (3 points)"
+      id: chain-insert-single
+      uses: classroom-resources/autograding-command-grader@v1
+      with:
+        test-name: "Chaining: Insert Single Entry (3 points)"
+        setup-command: ''
+        command: |
+          if [ -f build/run_tests ]; then
+            cd build && ./run_tests --gtest_filter=ChainingTest.InsertSingleEntry
+          else
+            exit 1
+          fi
+        timeout: 10
+        max-score: 3
+
+    - name: "Chaining: Insert Multiple Entries (3 points)"
+      id: chain-insert-multiple
+      uses: classroom-resources/autograding-command-grader@v1
+      with:
+        test-name: "Chaining: Insert Multiple Entries (3 points)"
+        setup-command: ''
+        command: |
+          if [ -f build/run_tests ]; then
+            cd build && ./run_tests --gtest_filter=ChainingTest.InsertMultipleEntries
+          else
+            exit 1
+          fi
+        timeout: 10
+        max-score: 3
+
+    - name: "Chaining: Insert Duplicate Key Updates Value (4 points)"
+      id: chain-insert-dup
+      uses: classroom-resources/autograding-command-grader@v1
+      with:
+        test-name: "Chaining: Insert Duplicate Key Updates Value (4 points)"
+        setup-command: ''
+        command: |
+          if [ -f build/run_tests ]; then
+            cd build && ./run_tests --gtest_filter=ChainingTest.InsertDuplicateKeyUpdatesValue
+          else
+            exit 1
+          fi
+        timeout: 10
+        max-score: 4
+
+    - name: "Chaining: Search Finds Existing Key (3 points)"
+      id: chain-search-found
+      uses: classroom-resources/autograding-command-grader@v1
+      with:
+        test-name: "Chaining: Search Finds Existing Key (3 points)"
+        setup-command: ''
+        command: |
+          if [ -f build/run_tests ]; then
+            cd build && ./run_tests --gtest_filter=ChainingTest.SearchFindsExistingKey
+          else
+            exit 1
+          fi
+        timeout: 10
+        max-score: 3
+
+    - name: "Chaining: Search Returns Null For Missing Key (3 points)"
+      id: chain-search-missing
+      uses: classroom-resources/autograding-command-grader@v1
+      with:
+        test-name: "Chaining: Search Returns Null For Missing Key (3 points)"
+        setup-command: ''
+        command: |
+          if [ -f build/run_tests ]; then
+            cd build && ./run_tests --gtest_filter=ChainingTest.SearchReturnsNullForMissingKey
+          else
+            exit 1
+          fi
+        timeout: 10
+        max-score: 3
+
+    - name: "Chaining: Search Empty Table (2 points)"
+      id: chain-search-empty
+      uses: classroom-resources/autograding-command-grader@v1
+      with:
+        test-name: "Chaining: Search Empty Table (2 points)"
+        setup-command: ''
+        command: |
+          if [ -f build/run_tests ]; then
+            cd build && ./run_tests --gtest_filter=ChainingTest.SearchEmptyTable
+          else
+            exit 1
+          fi
+        timeout: 10
+        max-score: 2
+
+    - name: "Chaining: Search After Update (2 points)"
+      id: chain-search-update
+      uses: classroom-resources/autograding-command-grader@v1
+      with:
+        test-name: "Chaining: Search After Update (2 points)"
+        setup-command: ''
+        command: |
+          if [ -f build/run_tests ]; then
+            cd build && ./run_tests --gtest_filter=ChainingTest.SearchAfterUpdate
+          else
+            exit 1
+          fi
+        timeout: 10
+        max-score: 2
+
+    - name: "Chaining: Remove Existing Key (2 points)"
+      id: chain-remove-found
+      uses: classroom-resources/autograding-command-grader@v1
+      with:
+        test-name: "Chaining: Remove Existing Key (2 points)"
+        setup-command: ''
+        command: |
+          if [ -f build/run_tests ]; then
+            cd build && ./run_tests --gtest_filter=ChainingTest.RemoveExistingKey
+          else
+            exit 1
+          fi
+        timeout: 10
+        max-score: 2
+
+    - name: "Chaining: Remove Missing Key Returns False (2 points)"
+      id: chain-remove-missing
+      uses: classroom-resources/autograding-command-grader@v1
+      with:
+        test-name: "Chaining: Remove Missing Key Returns False (2 points)"
+        setup-command: ''
+        command: |
+          if [ -f build/run_tests ]; then
+            cd build && ./run_tests --gtest_filter=ChainingTest.RemoveMissingKeyReturnsFalse
+          else
+            exit 1
+          fi
+        timeout: 10
+        max-score: 2
+
+    - name: "Chaining: Remove From Empty Table (2 points)"
+      id: chain-remove-empty
+      uses: classroom-resources/autograding-command-grader@v1
+      with:
+        test-name: "Chaining: Remove From Empty Table (2 points)"
+        setup-command: ''
+        command: |
+          if [ -f build/run_tests ]; then
+            cd build && ./run_tests --gtest_filter=ChainingTest.RemoveFromEmptyTable
+          else
+            exit 1
+          fi
+        timeout: 10
+        max-score: 2
+
+    - name: "Chaining: Remove Head Of Chain (2 points)"
+      id: chain-remove-head
+      uses: classroom-resources/autograding-command-grader@v1
+      with:
+        test-name: "Chaining: Remove Head Of Chain (2 points)"
+        setup-command: ''
+        command: |
+          if [ -f build/run_tests ]; then
+            cd build && ./run_tests --gtest_filter=ChainingTest.RemoveHeadOfChain
+          else
+            exit 1
+          fi
+        timeout: 10
+        max-score: 2
+
+    - name: "Chaining: Remove Only Element (2 points)"
+      id: chain-remove-only
+      uses: classroom-resources/autograding-command-grader@v1
+      with:
+        test-name: "Chaining: Remove Only Element (2 points)"
+        setup-command: ''
+        command: |
+          if [ -f build/run_tests ]; then
+            cd build && ./run_tests --gtest_filter=ChainingTest.RemoveOnlyElement
+          else
+            exit 1
+          fi
+        timeout: 10
+        max-score: 2
+
+    - name: "Chaining: Load Factor Empty (3 points)"
+      id: chain-lf-empty
+      uses: classroom-resources/autograding-command-grader@v1
+      with:
+        test-name: "Chaining: Load Factor Empty (3 points)"
+        setup-command: ''
+        command: |
+          if [ -f build/run_tests ]; then
+            cd build && ./run_tests --gtest_filter=ChainingTest.LoadFactorEmpty
+          else
+            exit 1
+          fi
+        timeout: 10
+        max-score: 3
+
+    - name: "Chaining: Load Factor After Inserts (4 points)"
+      id: chain-lf-inserts
+      uses: classroom-resources/autograding-command-grader@v1
+      with:
+        test-name: "Chaining: Load Factor After Inserts (4 points)"
+        setup-command: ''
+        command: |
+          if [ -f build/run_tests ]; then
+            cd build && ./run_tests --gtest_filter=ChainingTest.LoadFactorAfterInserts
+          else
+            exit 1
+          fi
+        timeout: 10
+        max-score: 4
+
+    - name: "Chaining: Resize Triggers On High Load Factor (4 points)"
+      id: chain-resize-trigger
+      uses: classroom-resources/autograding-command-grader@v1
+      with:
+        test-name: "Chaining: Resize Triggers On High Load Factor (4 points)"
+        setup-command: ''
+        command: |
+          if [ -f build/run_tests ]; then
+            cd build && ./run_tests --gtest_filter=ChainingTest.ResizeTriggersOnHighLoadFactor
+          else
+            exit 1
+          fi
+        timeout: 10
+        max-score: 4
+
+    - name: "Chaining: Resize Preserves All Entries (4 points)"
+      id: chain-resize-preserve
+      uses: classroom-resources/autograding-command-grader@v1
+      with:
+        test-name: "Chaining: Resize Preserves All Entries (4 points)"
+        setup-command: ''
+        command: |
+          if [ -f build/run_tests ]; then
+            cd build && ./run_tests --gtest_filter=ChainingTest.ResizePreservesAllEntries
+          else
+            exit 1
+          fi
+        timeout: 10
+        max-score: 4
+
+    - name: "Chaining: Print Empty Table (3 points)"
+      id: chain-print-empty
+      uses: classroom-resources/autograding-command-grader@v1
+      with:
+        test-name: "Chaining: Print Empty Table (3 points)"
+        setup-command: ''
+        command: |
+          if [ -f build/run_tests ]; then
+            cd build && ./run_tests --gtest_filter=ChainingTest.PrintEmptyTable
+          else
+            exit 1
+          fi
+        timeout: 10
+        max-score: 3
+
+    - name: "Chaining: Print Shows Entries (4 points)"
+      id: chain-print-entries
+      uses: classroom-resources/autograding-command-grader@v1
+      with:
+        test-name: "Chaining: Print Shows Entries (4 points)"
+        setup-command: ''
+        command: |
+          if [ -f build/run_tests ]; then
+            cd build && ./run_tests --gtest_filter=ChainingTest.PrintShowsEntries
+          else
+            exit 1
+          fi
+        timeout: 10
+        max-score: 4
+
+    - name: "Chaining: Print Format Bucket Index (3 points)"
+      id: chain-print-format
+      uses: classroom-resources/autograding-command-grader@v1
+      with:
+        test-name: "Chaining: Print Format Bucket Index (3 points)"
+        setup-command: ''
+        command: |
+          if [ -f build/run_tests ]; then
+            cd build && ./run_tests --gtest_filter=ChainingTest.PrintFormatBucketIndex
+          else
+            exit 1
+          fi
+        timeout: 10
+        max-score: 3
+
+    - name: "Probing: Constructor Default Capacity (5 points)"
+      id: probe-ctor-default
+      uses: classroom-resources/autograding-command-grader@v1
+      with:
+        test-name: "Probing: Constructor Default Capacity (5 points)"
+        setup-command: ''
+        command: |
+          if [ -f build/run_tests ]; then
+            cd build && ./run_tests --gtest_filter=ProbingTest.ConstructorDefaultCapacity
+          else
+            exit 1
+          fi
+        timeout: 10
+        max-score: 5
+
+    - name: "Probing: Insert Single Entry (2 points)"
+      id: probe-insert-single
+      uses: classroom-resources/autograding-command-grader@v1
+      with:
+        test-name: "Probing: Insert Single Entry (2 points)"
+        setup-command: ''
+        command: |
+          if [ -f build/run_tests ]; then
+            cd build && ./run_tests --gtest_filter=ProbingTest.InsertSingleEntry
+          else
+            exit 1
+          fi
+        timeout: 10
+        max-score: 2
+
+    - name: "Probing: Insert Multiple Entries (3 points)"
+      id: probe-insert-multiple
+      uses: classroom-resources/autograding-command-grader@v1
+      with:
+        test-name: "Probing: Insert Multiple Entries (3 points)"
+        setup-command: ''
+        command: |
+          if [ -f build/run_tests ]; then
+            cd build && ./run_tests --gtest_filter=ProbingTest.InsertMultipleEntries
+          else
+            exit 1
+          fi
+        timeout: 10
+        max-score: 3
+
+    - name: "Probing: Insert Duplicate Key Updates Value (2 points)"
+      id: probe-insert-dup
+      uses: classroom-resources/autograding-command-grader@v1
+      with:
+        test-name: "Probing: Insert Duplicate Key Updates Value (2 points)"
+        setup-command: ''
+        command: |
+          if [ -f build/run_tests ]; then
+            cd build && ./run_tests --gtest_filter=ProbingTest.InsertDuplicateKeyUpdatesValue
+          else
+            exit 1
+          fi
+        timeout: 10
+        max-score: 2
+
+    - name: "Probing: Insert Handles Collision (3 points)"
+      id: probe-insert-collision
+      uses: classroom-resources/autograding-command-grader@v1
+      with:
+        test-name: "Probing: Insert Handles Collision (3 points)"
+        setup-command: ''
+        command: |
+          if [ -f build/run_tests ]; then
+            cd build && ./run_tests --gtest_filter=ProbingTest.InsertHandlesCollision
+          else
+            exit 1
+          fi
+        timeout: 10
+        max-score: 3
+
+    - name: "Probing: Search Finds Existing Key (3 points)"
+      id: probe-search-found
+      uses: classroom-resources/autograding-command-grader@v1
+      with:
+        test-name: "Probing: Search Finds Existing Key (3 points)"
+        setup-command: ''
+        command: |
+          if [ -f build/run_tests ]; then
+            cd build && ./run_tests --gtest_filter=ProbingTest.SearchFindsExistingKey
+          else
+            exit 1
+          fi
+        timeout: 10
+        max-score: 3
+
+    - name: "Probing: Search Returns Null For Missing Key (2 points)"
+      id: probe-search-missing
+      uses: classroom-resources/autograding-command-grader@v1
+      with:
+        test-name: "Probing: Search Returns Null For Missing Key (2 points)"
+        setup-command: ''
+        command: |
+          if [ -f build/run_tests ]; then
+            cd build && ./run_tests --gtest_filter=ProbingTest.SearchReturnsNullForMissingKey
+          else
+            exit 1
+          fi
+        timeout: 10
+        max-score: 2
+
+    - name: "Probing: Search Empty Table (2 points)"
+      id: probe-search-empty
+      uses: classroom-resources/autograding-command-grader@v1
+      with:
+        test-name: "Probing: Search Empty Table (2 points)"
+        setup-command: ''
+        command: |
+          if [ -f build/run_tests ]; then
+            cd build && ./run_tests --gtest_filter=ProbingTest.SearchEmptyTable
+          else
+            exit 1
+          fi
+        timeout: 10
+        max-score: 2
+
+    - name: "Probing: Search Past Collision (3 points)"
+      id: probe-search-collision
+      uses: classroom-resources/autograding-command-grader@v1
+      with:
+        test-name: "Probing: Search Past Collision (3 points)"
+        setup-command: ''
+        command: |
+          if [ -f build/run_tests ]; then
+            cd build && ./run_tests --gtest_filter=ProbingTest.SearchPastCollision
+          else
+            exit 1
+          fi
+        timeout: 10
+        max-score: 3
+
+    - name: "Probing: Remove Existing Key (2 points)"
+      id: probe-remove-found
+      uses: classroom-resources/autograding-command-grader@v1
+      with:
+        test-name: "Probing: Remove Existing Key (2 points)"
+        setup-command: ''
+        command: |
+          if [ -f build/run_tests ]; then
+            cd build && ./run_tests --gtest_filter=ProbingTest.RemoveExistingKey
+          else
+            exit 1
+          fi
+        timeout: 10
+        max-score: 2
+
+    - name: "Probing: Remove Missing Key Returns False (2 points)"
+      id: probe-remove-missing
+      uses: classroom-resources/autograding-command-grader@v1
+      with:
+        test-name: "Probing: Remove Missing Key Returns False (2 points)"
+        setup-command: ''
+        command: |
+          if [ -f build/run_tests ]; then
+            cd build && ./run_tests --gtest_filter=ProbingTest.RemoveMissingKeyReturnsFalse
+          else
+            exit 1
+          fi
+        timeout: 10
+        max-score: 2
+
+    - name: "Probing: Remove From Empty Table (2 points)"
+      id: probe-remove-empty
+      uses: classroom-resources/autograding-command-grader@v1
+      with:
+        test-name: "Probing: Remove From Empty Table (2 points)"
+        setup-command: ''
+        command: |
+          if [ -f build/run_tests ]; then
+            cd build && ./run_tests --gtest_filter=ProbingTest.RemoveFromEmptyTable
+          else
+            exit 1
+          fi
+        timeout: 10
+        max-score: 2
+
+    - name: "Probing: Search Works After Remove (3 points)"
+      id: probe-search-after-remove
+      uses: classroom-resources/autograding-command-grader@v1
+      with:
+        test-name: "Probing: Search Works After Remove (3 points)"
+        setup-command: ''
+        command: |
+          if [ -f build/run_tests ]; then
+            cd build && ./run_tests --gtest_filter=ProbingTest.SearchWorksAfterRemove
+          else
+            exit 1
+          fi
+        timeout: 10
+        max-score: 3
+
+    - name: "Probing: Insert Reuses Tombstone (3 points)"
+      id: probe-insert-tombstone
+      uses: classroom-resources/autograding-command-grader@v1
+      with:
+        test-name: "Probing: Insert Reuses Tombstone (3 points)"
+        setup-command: ''
+        command: |
+          if [ -f build/run_tests ]; then
+            cd build && ./run_tests --gtest_filter=ProbingTest.InsertReusesTombstone
+          else
+            exit 1
+          fi
+        timeout: 10
+        max-score: 3
+
+    - name: "Probing: Remove Only Element (3 points)"
+      id: probe-remove-only
+      uses: classroom-resources/autograding-command-grader@v1
+      with:
+        test-name: "Probing: Remove Only Element (3 points)"
+        setup-command: ''
+        command: |
+          if [ -f build/run_tests ]; then
+            cd build && ./run_tests --gtest_filter=ProbingTest.RemoveOnlyElement
+          else
+            exit 1
+          fi
+        timeout: 10
+        max-score: 3
+
+    - name: "Probing: Resize Triggers On High Load Factor (5 points)"
+      id: probe-resize-trigger
+      uses: classroom-resources/autograding-command-grader@v1
+      with:
+        test-name: "Probing: Resize Triggers On High Load Factor (5 points)"
+        setup-command: ''
+        command: |
+          if [ -f build/run_tests ]; then
+            cd build && ./run_tests --gtest_filter=ProbingTest.ResizeTriggersOnHighLoadFactor
+          else
+            exit 1
+          fi
+        timeout: 10
+        max-score: 5
+
+    - name: "Probing: Resize Preserves All Entries (5 points)"
+      id: probe-resize-preserve
+      uses: classroom-resources/autograding-command-grader@v1
+      with:
+        test-name: "Probing: Resize Preserves All Entries (5 points)"
+        setup-command: ''
+        command: |
+          if [ -f build/run_tests ]; then
+            cd build && ./run_tests --gtest_filter=ProbingTest.ResizePreservesAllEntries
+          else
+            exit 1
+          fi
+        timeout: 10
+        max-score: 5
+
+    - name: "Probing: Resize Clears Tombstones (5 points)"
+      id: probe-resize-tombstones
+      uses: classroom-resources/autograding-command-grader@v1
+      with:
+        test-name: "Probing: Resize Clears Tombstones (5 points)"
+        setup-command: ''
+        command: |
+          if [ -f build/run_tests ]; then
+            cd build && ./run_tests --gtest_filter=ProbingTest.ResizeClearsTombstones
+          else
+            exit 1
+          fi
+        timeout: 10
+        max-score: 5
+
+    - name: Autograding Reporter
+      uses: classroom-resources/autograding-grading-reporter@v1
+      env:
+        BUILD_RESULTS: "${{steps.build.outputs.result}}"
+        CHAIN_CTOR_DEFAULT_RESULTS: "${{steps.chain-ctor-default.outputs.result}}"
+        CHAIN_CTOR_CUSTOM_RESULTS: "${{steps.chain-ctor-custom.outputs.result}}"
+        CHAIN_DTOR_RESULTS: "${{steps.chain-dtor.outputs.result}}"
+        CHAIN_DTOR_EMPTY_RESULTS: "${{steps.chain-dtor-empty.outputs.result}}"
+        CHAIN_HASH_CONSISTENT_RESULTS: "${{steps.chain-hash-consistent.outputs.result}}"
+        CHAIN_HASH_BOUNDS_RESULTS: "${{steps.chain-hash-bounds.outputs.result}}"
+        CHAIN_HASH_DIFFERENT_RESULTS: "${{steps.chain-hash-different.outputs.result}}"
+        CHAIN_INSERT_SINGLE_RESULTS: "${{steps.chain-insert-single.outputs.result}}"
+        CHAIN_INSERT_MULTIPLE_RESULTS: "${{steps.chain-insert-multiple.outputs.result}}"
+        CHAIN_INSERT_DUP_RESULTS: "${{steps.chain-insert-dup.outputs.result}}"
+        CHAIN_SEARCH_FOUND_RESULTS: "${{steps.chain-search-found.outputs.result}}"
+        CHAIN_SEARCH_MISSING_RESULTS: "${{steps.chain-search-missing.outputs.result}}"
+        CHAIN_SEARCH_EMPTY_RESULTS: "${{steps.chain-search-empty.outputs.result}}"
+        CHAIN_SEARCH_UPDATE_RESULTS: "${{steps.chain-search-update.outputs.result}}"
+        CHAIN_REMOVE_FOUND_RESULTS: "${{steps.chain-remove-found.outputs.result}}"
+        CHAIN_REMOVE_MISSING_RESULTS: "${{steps.chain-remove-missing.outputs.result}}"
+        CHAIN_REMOVE_EMPTY_RESULTS: "${{steps.chain-remove-empty.outputs.result}}"
+        CHAIN_REMOVE_HEAD_RESULTS: "${{steps.chain-remove-head.outputs.result}}"
+        CHAIN_REMOVE_ONLY_RESULTS: "${{steps.chain-remove-only.outputs.result}}"
+        CHAIN_LF_EMPTY_RESULTS: "${{steps.chain-lf-empty.outputs.result}}"
+        CHAIN_LF_INSERTS_RESULTS: "${{steps.chain-lf-inserts.outputs.result}}"
+        CHAIN_RESIZE_TRIGGER_RESULTS: "${{steps.chain-resize-trigger.outputs.result}}"
+        CHAIN_RESIZE_PRESERVE_RESULTS: "${{steps.chain-resize-preserve.outputs.result}}"
+        CHAIN_PRINT_EMPTY_RESULTS: "${{steps.chain-print-empty.outputs.result}}"
+        CHAIN_PRINT_ENTRIES_RESULTS: "${{steps.chain-print-entries.outputs.result}}"
+        CHAIN_PRINT_FORMAT_RESULTS: "${{steps.chain-print-format.outputs.result}}"
+        PROBE_CTOR_DEFAULT_RESULTS: "${{steps.probe-ctor-default.outputs.result}}"
+        PROBE_INSERT_SINGLE_RESULTS: "${{steps.probe-insert-single.outputs.result}}"
+        PROBE_INSERT_MULTIPLE_RESULTS: "${{steps.probe-insert-multiple.outputs.result}}"
+        PROBE_INSERT_DUP_RESULTS: "${{steps.probe-insert-dup.outputs.result}}"
+        PROBE_INSERT_COLLISION_RESULTS: "${{steps.probe-insert-collision.outputs.result}}"
+        PROBE_SEARCH_FOUND_RESULTS: "${{steps.probe-search-found.outputs.result}}"
+        PROBE_SEARCH_MISSING_RESULTS: "${{steps.probe-search-missing.outputs.result}}"
+        PROBE_SEARCH_EMPTY_RESULTS: "${{steps.probe-search-empty.outputs.result}}"
+        PROBE_SEARCH_COLLISION_RESULTS: "${{steps.probe-search-collision.outputs.result}}"
+        PROBE_REMOVE_FOUND_RESULTS: "${{steps.probe-remove-found.outputs.result}}"
+        PROBE_REMOVE_MISSING_RESULTS: "${{steps.probe-remove-missing.outputs.result}}"
+        PROBE_REMOVE_EMPTY_RESULTS: "${{steps.probe-remove-empty.outputs.result}}"
+        PROBE_SEARCH_AFTER_REMOVE_RESULTS: "${{steps.probe-search-after-remove.outputs.result}}"
+        PROBE_INSERT_TOMBSTONE_RESULTS: "${{steps.probe-insert-tombstone.outputs.result}}"
+        PROBE_REMOVE_ONLY_RESULTS: "${{steps.probe-remove-only.outputs.result}}"
+        PROBE_RESIZE_TRIGGER_RESULTS: "${{steps.probe-resize-trigger.outputs.result}}"
+        PROBE_RESIZE_PRESERVE_RESULTS: "${{steps.probe-resize-preserve.outputs.result}}"
+        PROBE_RESIZE_TOMBSTONES_RESULTS: "${{steps.probe-resize-tombstones.outputs.result}}"
+      with:
+        runners: build,chain-ctor-default,chain-ctor-custom,chain-dtor,chain-dtor-empty,chain-hash-consistent,chain-hash-bounds,chain-hash-different,chain-insert-single,chain-insert-multiple,chain-insert-dup,chain-search-found,chain-search-missing,chain-search-empty,chain-search-update,chain-remove-found,chain-remove-missing,chain-remove-empty,chain-remove-head,chain-remove-only,chain-lf-empty,chain-lf-inserts,chain-resize-trigger,chain-resize-preserve,chain-print-empty,chain-print-entries,chain-print-format,probe-ctor-default,probe-insert-single,probe-insert-multiple,probe-insert-dup,probe-insert-collision,probe-search-found,probe-search-missing,probe-search-empty,probe-search-collision,probe-remove-found,probe-remove-missing,probe-remove-empty,probe-search-after-remove,probe-insert-tombstone,probe-remove-only,probe-resize-trigger,probe-resize-preserve,probe-resize-tombstones
