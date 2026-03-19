@@ -1,0 +1,307 @@
+<!-- Canvas LMS HTML Fragment — paste into the Rich Content Editor (HTML view) -->
+
+<h2>&#x1F4D6; Student Directory: Hash Table Implementation</h2>
+
+<h3>&#x1F3AF; Overview</h3>
+<p>In this assignment you will build a student directory using two hash table implementations from scratch, practicing every core concept from Module 5. Student names are the keys and student IDs are the values &mdash; the same scenario you worked with in CT10 and CT11.</p>
+<ul>
+    <li><strong>Hash functions</strong> &mdash; converting string keys to array indices using a custom hash algorithm</li>
+    <li><strong>Modulo mapping</strong> &mdash; mapping hash values into a fixed-size bucket array</li>
+    <li><strong>Separate chaining (open hashing)</strong> &mdash; resolving collisions with linked lists at each bucket</li>
+    <li><strong>Linear probing (closed hashing)</strong> &mdash; resolving collisions by scanning forward in the array</li>
+    <li><strong>Tombstone deletion</strong> &mdash; marking slots as deleted so probing sequences aren't broken</li>
+    <li><strong>Load factor</strong> &mdash; tracking how full the table is (<code>size / capacity</code>)</li>
+    <li><strong>Resizing &amp; rehashing</strong> &mdash; growing the table and reinserting all entries when the load factor is too high</li>
+</ul>
+
+<h3>&#x1F4D6; Learning Objectives</h3>
+<p>By completing this assignment, you will practice:</p>
+<ul>
+    <li><strong>Custom hash functions</strong> &mdash; implementing a hash algorithm that converts strings to integer indices</li>
+    <li><strong>Separate chaining</strong> &mdash; building and traversing linked-list chains at each bucket</li>
+    <li><strong>Linear probing</strong> &mdash; finding open slots by scanning forward with wraparound</li>
+    <li><strong>Tombstone deletion</strong> &mdash; marking deleted slots so probe sequences aren't broken</li>
+    <li><strong>Load factor &amp; resizing</strong> &mdash; detecting when to grow the table and rehashing all entries</li>
+    <li><strong>Memory management</strong> &mdash; allocating and freeing dynamic arrays and linked-list nodes</li>
+</ul>
+
+<h3>&#x1F680; Getting Started</h3>
+
+<h4>Step 1: Accept the Assignment</h4>
+<p>Click the button below to create your personal repository:</p>
+<p><a style="display: inline-block; padding: 10px 24px; font-size: 1em; font-weight: 600; color: #fff; background-color: #0b874b; border-radius: 4px; text-decoration: none;" href="https://classroom.github.com/a/yyPwoPzi" target="_blank" rel="noopener">Accept Assignment on GitHub</a></p>
+
+<div style="padding: 14px 18px; border-radius: 4px; margin-bottom: 16px; background-color: #fcf8e3; border: 1px solid #faebcc; color: #8a6d3b;">
+    <strong>Repository Access Issue?</strong><br />
+    If you don't see the repository after accepting, check your email for the GitHub invite.
+</div>
+
+<h4>Step 2: Clone in Visual Studio</h4>
+<ol>
+    <li>Open <strong>Visual Studio</strong></li>
+    <li>On the start window, click <strong>"Clone a repository"</strong></li>
+    <li>Paste your repository URL (from GitHub) into the <strong>Repository location</strong> field</li>
+    <li>Choose a local path and click <strong>Clone</strong></li>
+    <li>Visual Studio should automatically detect the CMake project and configure it</li>
+</ol>
+
+<div style="padding: 14px 18px; border-radius: 4px; margin-bottom: 16px; background-color: #d9edf7; border: 1px solid #bce8f1; color: #31708f;">
+    Follow the <strong>Troubleshooting</strong> section at the bottom if CMake does not configure automatically.
+</div>
+
+<h4>Step 3: Wait for CMake Configuration</h4>
+<p>Visual Studio will automatically run CMake. Watch the <strong>Output</strong> window (<em>View &rarr; Output</em>, select <em>"Show output from: CMake"</em>) until you see:</p>
+<pre style="background-color: #1e1e1e; color: #d4d4d4; padding: 16px 20px; border-radius: 4px; overflow-x: auto; font-family: 'Menlo', 'Monaco', 'Consolas', 'Courier New', monospace; font-size: 0.875em; line-height: 1.6;">CMake generation finished.</pre>
+
+<h3>&#x1F4C1; Project Structure</h3>
+<pre style="background-color: #1e1e1e; color: #d4d4d4; padding: 16px 20px; border-radius: 4px; font-family: 'Menlo', 'Monaco', 'Consolas', 'Courier New', monospace; font-size: 0.875em; line-height: 1.8;"><span style="color: #569cd6;">lab5-student-directory/</span>
+  <span style="color: #569cd6;">include/</span>
+    <span style="color: #ce9178;">ChainingHashTable.h</span>    <span style="color: #6a9955;">&larr; class declaration (do NOT modify)</span>
+    <span style="color: #ce9178;">ProbingHashTable.h</span>     <span style="color: #6a9955;">&larr; class declaration (do NOT modify)</span>
+  <span style="color: #569cd6;">src/</span>
+    <span style="color: #4ec9b0;">ChainingHashTable.cpp</span>  <span style="color: #6a9955;">&larr; YOUR WORK: TODOs 1&ndash;8 (75 pts)</span>
+    <span style="color: #4ec9b0;">ProbingHashTable.cpp</span>   <span style="color: #6a9955;">&larr; YOUR WORK: TODOs 9&ndash;13 (55 pts)</span>
+    <span style="color: #ce9178;">main.cpp</span>               <span style="color: #6a9955;">&larr; demo program (provided)</span>
+  <span style="color: #569cd6;">tests/</span>
+    <span style="color: #ce9178;">chaining_test.cpp</span>      <span style="color: #6a9955;">&larr; automated tests (do NOT modify)</span>
+    <span style="color: #ce9178;">probing_test.cpp</span>       <span style="color: #6a9955;">&larr; automated tests (do NOT modify)</span>
+  <span style="color: #ce9178;">CMakeLists.txt</span></pre>
+
+<h3>&#x1F4DD; What You Need To Do</h3>
+<p>Your work goes in <strong>two files</strong>:</p>
+<ul>
+    <li><code>src/ChainingHashTable.cpp</code> &mdash; TODOs 1&ndash;8 (75 points)</li>
+    <li><code>src/ProbingHashTable.cpp</code> &mdash; TODOs 9&ndash;13 (55 points)</li>
+</ul>
+<p>The headers, <code>main.cpp</code>, and tests are provided &mdash; <strong>do not modify them</strong>.</p>
+<p>Open each <code>.cpp</code> file and follow every <code>TODO</code> comment. Each section tells you exactly what to implement and references the specific CT10/CT11 pattern you're applying.</p>
+
+<h4>Part 1: Chaining Hash Table (75 points)</h4>
+<ul>
+    <li>&#9744; <strong>TODO 1: Constructor</strong> &mdash; allocate bucket array (5 pts)</li>
+    <li>&#9744; <strong>TODO 2: Destructor</strong> &mdash; clean up all chains (5 pts)</li>
+    <li>&#9744; <strong>TODO 3: <code>hash()</code></strong> &mdash; custom hash function (10 pts)</li>
+    <li>&#9744; <strong>TODO 4: <code>insert()</code></strong> &mdash; add/update key-value pair (10 pts)</li>
+    <li>&#9744; <strong>TODO 5: <code>search()</code></strong> &mdash; find value by key (10 pts)</li>
+    <li>&#9744; <strong>TODO 6: <code>remove()</code></strong> &mdash; delete a key from its chain (10 pts)</li>
+    <li>&#9744; <strong>TODO 7: <code>load_factor()</code> and <code>resize()</code></strong> &mdash; grow &amp; rehash (15 pts)</li>
+    <li>&#9744; <strong>TODO 8: <code>print()</code></strong> &mdash; display each bucket's chain (10 pts)</li>
+</ul>
+
+<h4>Part 2: Probing Hash Table (55 points)</h4>
+<ul>
+    <li>&#9744; <strong>TODO 9: Constructor</strong> &mdash; allocate slot array with status flags (5 pts)</li>
+    <li>&#9744; <strong>TODO 10: <code>insert()</code></strong> &mdash; linear probing to find open slot (10 pts)</li>
+    <li>&#9744; <strong>TODO 11: <code>search()</code></strong> &mdash; linear probing to find key (10 pts)</li>
+    <li>&#9744; <strong>TODO 12: <code>remove()</code></strong> &mdash; tombstone deletion (15 pts)</li>
+    <li>&#9744; <strong>TODO 13: <code>resize()</code></strong> &mdash; grow &amp; rehash, skip tombstones (15 pts)</li>
+</ul>
+
+<h3>&#x1F4A1; Key Concepts</h3>
+
+<div style="padding: 14px 18px; border-radius: 4px; margin-bottom: 16px; background-color: #d9edf7; border: 1px solid #bce8f1; color: #31708f;">
+    <strong>Chaining vs. Probing</strong><br />
+    Chaining stores collisions in linked lists hanging off each bucket &mdash; the array never fills up, but chains can grow long. Probing stores everything directly in the array by scanning forward for an open slot &mdash; more cache-friendly, but requires tombstones for deletion.
+</div>
+
+<div style="padding: 14px 18px; border-radius: 4px; margin-bottom: 16px; background-color: #d9edf7; border: 1px solid #bce8f1; color: #31708f;">
+    <strong>Load Factor &amp; Resizing</strong><br />
+    Load factor = <code>size / capacity</code>. When it exceeds the threshold (typically 0.75), allocate a larger array with a prime capacity and <strong>rehash</strong> every existing entry &mdash; hash values change because the capacity changed.
+</div>
+
+<div style="padding: 14px 18px; border-radius: 4px; margin-bottom: 16px; background-color: #f8d7da; border: 1px solid #f5c6cb; color: #721c24;">
+    <strong>Common Pitfall: Tombstones</strong><br />
+    When probing, you must skip past <code>DELETED</code> (tombstone) slots during <code>search()</code> &mdash; stopping early would miss entries inserted before the deletion. During <code>insert()</code>, you <em>can</em> reuse tombstone slots. During <code>resize()</code>, skip tombstones entirely &mdash; only rehash <code>OCCUPIED</code> slots.
+</div>
+
+<h3>&#x1F4BB; Expected Output</h3>
+<p>When you run the program with all TODOs complete, you should see:</p>
+<pre style="background-color: #1e1e1e; color: #d4d4d4; padding: 16px 20px; border-radius: 4px; overflow-x: auto; font-family: 'Menlo', 'Monaco', 'Consolas', 'Courier New', monospace; font-size: 0.875em; line-height: 1.6;">=== Module 5 Lab: Student Directory ===
+
+--- Part 1: Chaining Hash Table ---
+Empty directory: size=0, capacity=7
+
+Registering students...
+  insert("Alice", 1001)
+  insert("Bob", 1002)
+  insert("Carol", 1003)
+  insert("Dave", 1004)
+  insert("Eve", 1005)
+
+Directory contents:
+  [0]: ...
+  [1]: ...
+  ...
+
+Looking up students...
+  search("Carol") = 1003
+  search("Zara") = not found
+
+Updating student ID...
+  insert("Alice", 9999)
+  search("Alice") = 9999
+
+Removing "Bob"...
+  Directory size: 4
+
+Resize test (load factor trigger)...
+  Before: capacity=7, load_factor=0.57
+  After more inserts: capacity=17, load_factor=0.47
+
+--- Part 2: Probing Hash Table ---
+Empty directory: size=0, capacity=7
+
+Registering students...
+  insert("Frank", 2001)
+  insert("Grace", 2002)
+  insert("Heidi", 2003)
+  insert("Ivan", 2004)
+
+Looking up students...
+  search("Heidi") = 2003
+  search("Zara") = not found
+
+Removing "Grace" (tombstone)...
+  search("Heidi") = 2003  (still works past tombstone)
+  size: 3
+
+Resize test...
+  Before: capacity=7
+  After more inserts: capacity=17  (tombstones cleared)
+
+=== Lab 5 Complete ===</pre>
+
+<h3>&#x1F4CA; Grading (130 points)</h3>
+<table style="width: 100%; border-collapse: collapse; margin-bottom: 16px;">
+    <thead>
+        <tr>
+            <th style="border: 1px solid #c7cdd1; padding: 10px 14px; background-color: #f5f5f5; font-weight: 700;">Category</th>
+            <th style="border: 1px solid #c7cdd1; padding: 10px 14px; background-color: #f5f5f5; font-weight: 700;">Points</th>
+            <th style="border: 1px solid #c7cdd1; padding: 10px 14px; background-color: #f5f5f5; font-weight: 700;">What is tested</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td style="border: 1px solid #c7cdd1; padding: 10px 14px;">Build</td>
+            <td style="border: 1px solid #c7cdd1; padding: 10px 14px;">0</td>
+            <td style="border: 1px solid #c7cdd1; padding: 10px 14px;">Project must compile (tests won't run otherwise)</td>
+        </tr>
+        <tr style="background-color: #fafafa;">
+            <td colspan="3" style="border: 1px solid #c7cdd1; padding: 10px 14px; font-weight: 700; background-color: #f0f0f0;">Chaining Hash Table (75 pts)</td>
+        </tr>
+        <tr>
+            <td style="border: 1px solid #c7cdd1; padding: 10px 14px;">Constructor</td>
+            <td style="border: 1px solid #c7cdd1; padding: 10px 14px;">5</td>
+            <td style="border: 1px solid #c7cdd1; padding: 10px 14px;">Correct capacity, size 0, buckets initialized</td>
+        </tr>
+        <tr style="background-color: #fafafa;">
+            <td style="border: 1px solid #c7cdd1; padding: 10px 14px;">Destructor</td>
+            <td style="border: 1px solid #c7cdd1; padding: 10px 14px;">5</td>
+            <td style="border: 1px solid #c7cdd1; padding: 10px 14px;">No memory leaks (tested implicitly)</td>
+        </tr>
+        <tr>
+            <td style="border: 1px solid #c7cdd1; padding: 10px 14px;"><code>hash()</code></td>
+            <td style="border: 1px solid #c7cdd1; padding: 10px 14px;">10</td>
+            <td style="border: 1px solid #c7cdd1; padding: 10px 14px;">Consistent hashing, good distribution across buckets</td>
+        </tr>
+        <tr style="background-color: #fafafa;">
+            <td style="border: 1px solid #c7cdd1; padding: 10px 14px;"><code>insert()</code></td>
+            <td style="border: 1px solid #c7cdd1; padding: 10px 14px;">10</td>
+            <td style="border: 1px solid #c7cdd1; padding: 10px 14px;">New keys added, duplicate keys update value, size updates</td>
+        </tr>
+        <tr>
+            <td style="border: 1px solid #c7cdd1; padding: 10px 14px;"><code>search()</code></td>
+            <td style="border: 1px solid #c7cdd1; padding: 10px 14px;">10</td>
+            <td style="border: 1px solid #c7cdd1; padding: 10px 14px;">Finds existing keys, returns indicator for missing keys</td>
+        </tr>
+        <tr style="background-color: #fafafa;">
+            <td style="border: 1px solid #c7cdd1; padding: 10px 14px;"><code>remove()</code></td>
+            <td style="border: 1px solid #c7cdd1; padding: 10px 14px;">10</td>
+            <td style="border: 1px solid #c7cdd1; padding: 10px 14px;">Removes from head/middle/tail of chain, no-op when missing</td>
+        </tr>
+        <tr>
+            <td style="border: 1px solid #c7cdd1; padding: 10px 14px;"><code>load_factor()</code> / <code>resize()</code></td>
+            <td style="border: 1px solid #c7cdd1; padding: 10px 14px;">15</td>
+            <td style="border: 1px solid #c7cdd1; padding: 10px 14px;">Correct ratio, doubles-ish capacity, all entries rehashed</td>
+        </tr>
+        <tr style="background-color: #fafafa;">
+            <td style="border: 1px solid #c7cdd1; padding: 10px 14px;"><code>print()</code></td>
+            <td style="border: 1px solid #c7cdd1; padding: 10px 14px;">10</td>
+            <td style="border: 1px solid #c7cdd1; padding: 10px 14px;">Correct format showing each bucket's chain</td>
+        </tr>
+        <tr>
+            <td colspan="3" style="border: 1px solid #c7cdd1; padding: 10px 14px; font-weight: 700; background-color: #f0f0f0;">Probing Hash Table (55 pts)</td>
+        </tr>
+        <tr style="background-color: #fafafa;">
+            <td style="border: 1px solid #c7cdd1; padding: 10px 14px;">Constructor</td>
+            <td style="border: 1px solid #c7cdd1; padding: 10px 14px;">5</td>
+            <td style="border: 1px solid #c7cdd1; padding: 10px 14px;">Correct capacity, all slots marked empty</td>
+        </tr>
+        <tr>
+            <td style="border: 1px solid #c7cdd1; padding: 10px 14px;"><code>insert()</code></td>
+            <td style="border: 1px solid #c7cdd1; padding: 10px 14px;">10</td>
+            <td style="border: 1px solid #c7cdd1; padding: 10px 14px;">Linear probing finds open slot, updates duplicates, reuses tombstones</td>
+        </tr>
+        <tr style="background-color: #fafafa;">
+            <td style="border: 1px solid #c7cdd1; padding: 10px 14px;"><code>search()</code></td>
+            <td style="border: 1px solid #c7cdd1; padding: 10px 14px;">10</td>
+            <td style="border: 1px solid #c7cdd1; padding: 10px 14px;">Probes past tombstones, stops at empty, finds existing keys</td>
+        </tr>
+        <tr>
+            <td style="border: 1px solid #c7cdd1; padding: 10px 14px;"><code>remove()</code></td>
+            <td style="border: 1px solid #c7cdd1; padding: 10px 14px;">15</td>
+            <td style="border: 1px solid #c7cdd1; padding: 10px 14px;">Sets tombstone flag, doesn't break probe sequences</td>
+        </tr>
+        <tr style="background-color: #fafafa;">
+            <td style="border: 1px solid #c7cdd1; padding: 10px 14px;"><code>resize()</code></td>
+            <td style="border: 1px solid #c7cdd1; padding: 10px 14px;">15</td>
+            <td style="border: 1px solid #c7cdd1; padding: 10px 14px;">Grows table, rehashes occupied slots, skips tombstones</td>
+        </tr>
+        <tr>
+            <td style="border: 1px solid #c7cdd1; padding: 10px 14px; font-weight: 700; background-color: #f5f5f5;"><strong>Total</strong></td>
+            <td style="border: 1px solid #c7cdd1; padding: 10px 14px; font-weight: 700; background-color: #f5f5f5;"><strong>130</strong></td>
+            <td style="border: 1px solid #c7cdd1; padding: 10px 14px; background-color: #f5f5f5;"></td>
+        </tr>
+    </tbody>
+</table>
+
+<h3>&#x1F4A1; Tips for Success</h3>
+
+<div style="padding: 14px 18px; border-radius: 4px; margin-bottom: 16px; background-color: #dff0d8; border: 1px solid #d6e9c6; color: #3c763d;">
+    <strong>Work in order:</strong> Complete the Chaining Hash Table first (TODOs 1&ndash;8), then move to the Probing Hash Table (TODOs 9&ndash;13). Each TODO builds on the previous one.
+</div>
+
+<div style="padding: 14px 18px; border-radius: 4px; margin-bottom: 16px; background-color: #dff0d8; border: 1px solid #d6e9c6; color: #3c763d;">
+    <strong>Review your Code-Togethers:</strong> Each TODO references the CT10 or CT11 pattern you're applying. Revisit those files if you get stuck.
+</div>
+
+<div style="padding: 14px 18px; border-radius: 4px; margin-bottom: 16px; background-color: #dff0d8; border: 1px solid #d6e9c6; color: #3c763d;">
+    <strong>Draw it out:</strong> Sketch what happens when two keys hash to the same index &mdash; for both chaining and probing. This makes the logic much clearer.
+</div>
+
+<div style="padding: 14px 18px; border-radius: 4px; margin-bottom: 16px; background-color: #dff0d8; border: 1px solid #d6e9c6; color: #3c763d;">
+    <strong>Test frequently:</strong> Run the tests after each TODO to catch bugs early. Use the debugger if you hit crashes.
+</div>
+
+<h3>&#x1F527; Troubleshooting</h3>
+
+<h4>CMake does not configure automatically</h4>
+<ol>
+    <li>Make sure you have <strong>Desktop development with C++</strong> workload installed in Visual Studio</li>
+    <li>Go to <em>Project &rarr; CMake Settings</em> and ensure the configuration is correct</li>
+    <li>Try <em>Project &rarr; Delete Cache and Reconfigure</em></li>
+    <li>Verify that <code>CMakeLists.txt</code> is in the root of your cloned repository</li>
+</ol>
+
+<h4>Tests fail to build</h4>
+<ul>
+    <li>Google Test is fetched automatically via CMake's <code>FetchContent</code> &mdash; make sure you have an internet connection during the first build</li>
+    <li>Do <strong>not</strong> modify header files or test files</li>
+</ul>
+
+<h4>Running Tests</h4>
+<ol>
+    <li>In Visual Studio, select <code>run_tests.exe</code> as the startup item from the dropdown</li>
+    <li>Press <strong>Ctrl+F5</strong> to run without debugging</li>
+    <li>Check the output for passed/failed test results</li>
+</ol>
