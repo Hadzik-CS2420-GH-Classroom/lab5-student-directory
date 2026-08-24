@@ -1,0 +1,175 @@
+<!-- Canvas LMS HTML Fragment — paste into the Rich Content Editor (HTML view) -->
+
+<h2>💻 Assignment: Lab 5 - Student Directory</h2>
+
+<h3>&#x1F3AF; Overview</h3>
+<p>In this assignment you will build a student directory using two hash table implementations from scratch, practicing every core concept from Module 5. Student names are the keys and student IDs are the values &mdash; the same scenario you worked with in CT10 and CT11.</p>
+<p>- <strong>Hash functions</strong> &mdash; converting string keys to array indices using a custom hash algorithm
+- <strong>Modulo mapping</strong> &mdash; mapping hash values into a fixed-size bucket array
+- <strong>Separate chaining (open hashing)</strong> &mdash; resolving collisions with linked lists at each bucket
+- <strong>Linear probing (closed hashing)</strong> &mdash; resolving collisions by scanning forward in the array
+- <strong>Tombstone deletion</strong> &mdash; marking slots as deleted so probing sequences aren't broken
+- <strong>Load factor</strong> &mdash; tracking how full the table is (<code>size / capacity</code>)
+- <strong>Resizing &amp; rehashing</strong> &mdash; growing the table and reinserting all entries when the load factor is too high</p>
+
+<h3>&#x1F4D6; Learning Objectives</h3>
+<p>By completing this activity, you will be able to:</p>
+<ul>
+    <li><!-- TODO: Add learning objectives --></li>
+</ul>
+
+<h3>&#x1F680; Getting Started</h3>
+
+<h4>Step 1: Fork the Repository</h4>
+<p>Click the button below to fork the assignment repository to your GitHub account:</p>
+<p><a style="display: inline-block; padding: 10px 24px; font-size: 1em; font-weight: 600; color: #fff; background-color: #0b874b; border-radius: 4px; text-decoration: none;" href="https://hadzikcs.netlify.app/gh?course=sh/CS2420&task=lab5-student-directory" target="_blank" rel="noopener">Fork Repository on GitHub</a></p>
+
+<div style="padding: 14px 18px; border-radius: 4px; margin-bottom: 16px; background-color: #fcf8e3; border: 1px solid #faebcc; color: #8a6d3b;">
+    <strong>First time?</strong> You&#x2019;ll need a GitHub account. Sign in (or create one) before clicking the button above.
+</div>
+
+<h4>Step 2: Clone in Visual Studio</h4>
+<ol>
+    <li>Open <strong>Visual Studio</strong></li>
+    <li>On the start window, click <strong>&#x201C;Clone a repository&#x201D;</strong></li>
+    <li>Paste your repository URL (from GitHub) into the <strong>Repository location</strong> field</li>
+    <li>Choose a local path and click <strong>Clone</strong></li>
+    <li>Visual Studio should automatically detect the CMake project and configure it</li>
+</ol>
+
+<div style="padding: 14px 18px; border-radius: 4px; margin-bottom: 16px; background-color: #d9edf7; border: 1px solid #bce8f1; color: #31708f;">
+    Follow the <strong>Troubleshooting</strong> section at the bottom if CMake does not configure automatically.
+</div>
+
+<h4>Step 3: Wait for CMake Configuration</h4>
+<p>Visual Studio will automatically run CMake. Watch the <strong>Output</strong> window (<em>View &rarr; Output</em>, select <em>&#x201C;Show output from: CMake&#x201D;</em>) until you see:</p>
+<pre style="background-color: #1e1e1e; color: #d4d4d4; padding: 16px 20px; border-radius: 4px; overflow-x: auto; font-family: 'Menlo', 'Monaco', 'Consolas', 'Courier New', monospace; font-size: 0.875em; line-height: 1.6;">CMake generation finished.</pre>
+
+<h3>&#x1F4DD; What You&#x2019;ll Do</h3>
+<p>Open each source file and complete the <code>TODO</code> comments. Each TODO tells you what to write, and the <strong>DISCUSSION</strong> comments explain the &#x201C;why&#x201D; behind the code. We&#x2019;ll work through these together in class.</p>
+
+<h3>&#x1F4CA; Grading (130 points)</h3>
+<p>Your code is auto-graded when you push. Tests check that each TODO produces the correct output.</p>
+<table style="width: 100%; border-collapse: collapse; margin-bottom: 16px;">
+    <thead>
+        <tr>
+            <th style="border: 1px solid #c7cdd1; padding: 10px 14px; background-color: #f5f5f5; font-weight: 700;">Category</th>
+            <th style="border: 1px solid #c7cdd1; padding: 10px 14px; background-color: #f5f5f5; font-weight: 700;">Points</th>
+            <th style="border: 1px solid #c7cdd1; padding: 10px 14px; background-color: #f5f5f5; font-weight: 700;">What is tested</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td style="border: 1px solid #c7cdd1; padding: 10px 14px;">Build</td>
+            <td style="border: 1px solid #c7cdd1; padding: 10px 14px;">0</td>
+            <td style="border: 1px solid #c7cdd1; padding: 10px 14px;">Project must compile (tests won't run otherwise)</td>
+        </tr>
+        <tr style="background-color: #fafafa;">
+            <td style="border: 1px solid #c7cdd1; padding: 10px 14px;">Chaining Hash Table</td>
+            <td style="border: 1px solid #c7cdd1; padding: 10px 14px;">**75**</td>
+            <td style="border: 1px solid #c7cdd1; padding: 10px 14px;"></td>
+        </tr>
+        <tr>
+            <td style="border: 1px solid #c7cdd1; padding: 10px 14px;">Constructor</td>
+            <td style="border: 1px solid #c7cdd1; padding: 10px 14px;">5</td>
+            <td style="border: 1px solid #c7cdd1; padding: 10px 14px;">Correct capacity, size 0, buckets initialized</td>
+        </tr>
+        <tr style="background-color: #fafafa;">
+            <td style="border: 1px solid #c7cdd1; padding: 10px 14px;">Destructor</td>
+            <td style="border: 1px solid #c7cdd1; padding: 10px 14px;">5</td>
+            <td style="border: 1px solid #c7cdd1; padding: 10px 14px;">No memory leaks (tested implicitly)</td>
+        </tr>
+        <tr>
+            <td style="border: 1px solid #c7cdd1; padding: 10px 14px;"><code>hash()</code></td>
+            <td style="border: 1px solid #c7cdd1; padding: 10px 14px;">10</td>
+            <td style="border: 1px solid #c7cdd1; padding: 10px 14px;">Consistent hashing, good distribution across buckets</td>
+        </tr>
+        <tr style="background-color: #fafafa;">
+            <td style="border: 1px solid #c7cdd1; padding: 10px 14px;"><code>insert()</code></td>
+            <td style="border: 1px solid #c7cdd1; padding: 10px 14px;">10</td>
+            <td style="border: 1px solid #c7cdd1; padding: 10px 14px;">New keys added, duplicate keys update value, size updates</td>
+        </tr>
+        <tr>
+            <td style="border: 1px solid #c7cdd1; padding: 10px 14px;"><code>search()</code></td>
+            <td style="border: 1px solid #c7cdd1; padding: 10px 14px;">10</td>
+            <td style="border: 1px solid #c7cdd1; padding: 10px 14px;">Finds existing keys, returns indicator for missing keys</td>
+        </tr>
+        <tr style="background-color: #fafafa;">
+            <td style="border: 1px solid #c7cdd1; padding: 10px 14px;"><code>remove()</code></td>
+            <td style="border: 1px solid #c7cdd1; padding: 10px 14px;">10</td>
+            <td style="border: 1px solid #c7cdd1; padding: 10px 14px;">Removes from head/middle/tail of chain, no-op when missing</td>
+        </tr>
+        <tr>
+            <td style="border: 1px solid #c7cdd1; padding: 10px 14px;"><code>load_factor()</code> / <code>resize()</code></td>
+            <td style="border: 1px solid #c7cdd1; padding: 10px 14px;">15</td>
+            <td style="border: 1px solid #c7cdd1; padding: 10px 14px;">Correct ratio, doubles-ish capacity, all entries rehashed</td>
+        </tr>
+        <tr style="background-color: #fafafa;">
+            <td style="border: 1px solid #c7cdd1; padding: 10px 14px;"><code>print()</code></td>
+            <td style="border: 1px solid #c7cdd1; padding: 10px 14px;">10</td>
+            <td style="border: 1px solid #c7cdd1; padding: 10px 14px;">Correct format showing each bucket's chain</td>
+        </tr>
+        <tr>
+            <td style="border: 1px solid #c7cdd1; padding: 10px 14px;">Probing Hash Table</td>
+            <td style="border: 1px solid #c7cdd1; padding: 10px 14px;">**55**</td>
+            <td style="border: 1px solid #c7cdd1; padding: 10px 14px;"></td>
+        </tr>
+        <tr style="background-color: #fafafa;">
+            <td style="border: 1px solid #c7cdd1; padding: 10px 14px;">Constructor</td>
+            <td style="border: 1px solid #c7cdd1; padding: 10px 14px;">5</td>
+            <td style="border: 1px solid #c7cdd1; padding: 10px 14px;">Correct capacity, all slots marked empty</td>
+        </tr>
+        <tr>
+            <td style="border: 1px solid #c7cdd1; padding: 10px 14px;"><code>insert()</code></td>
+            <td style="border: 1px solid #c7cdd1; padding: 10px 14px;">10</td>
+            <td style="border: 1px solid #c7cdd1; padding: 10px 14px;">Linear probing finds open slot, updates duplicates, reuses tombstones</td>
+        </tr>
+        <tr style="background-color: #fafafa;">
+            <td style="border: 1px solid #c7cdd1; padding: 10px 14px;"><code>search()</code></td>
+            <td style="border: 1px solid #c7cdd1; padding: 10px 14px;">10</td>
+            <td style="border: 1px solid #c7cdd1; padding: 10px 14px;">Probes past tombstones, stops at empty, finds existing keys</td>
+        </tr>
+        <tr>
+            <td style="border: 1px solid #c7cdd1; padding: 10px 14px;"><code>remove()</code></td>
+            <td style="border: 1px solid #c7cdd1; padding: 10px 14px;">15</td>
+            <td style="border: 1px solid #c7cdd1; padding: 10px 14px;">Sets tombstone flag, doesn't break probe sequences</td>
+        </tr>
+        <tr style="background-color: #fafafa;">
+            <td style="border: 1px solid #c7cdd1; padding: 10px 14px;"><code>resize()</code></td>
+            <td style="border: 1px solid #c7cdd1; padding: 10px 14px;">15</td>
+            <td style="border: 1px solid #c7cdd1; padding: 10px 14px;">Grows table, rehashes occupied slots, skips tombstones</td>
+        </tr>
+        <tr>
+            <td style="border: 1px solid #c7cdd1; padding: 10px 14px; font-weight: 700; background-color: #f5f5f5;"><strong>Total</strong></td>
+            <td style="border: 1px solid #c7cdd1; padding: 10px 14px; font-weight: 700; background-color: #f5f5f5;"><strong>130</strong></td>
+            <td style="border: 1px solid #c7cdd1; padding: 10px 14px; background-color: #f5f5f5;"></td>
+        </tr>
+    </tbody>
+</table>
+
+<h3>&#x1F527; Troubleshooting</h3>
+
+<h4>CMake does not configure automatically</h4>
+<ol>
+    <li>Make sure you have <strong>Desktop development with C++</strong> workload installed in Visual Studio</li>
+    <li>Go to <em>Project &rarr; CMake Settings</em> and ensure the configuration is correct</li>
+    <li>Try <em>Project &rarr; Delete Cache and Reconfigure</em></li>
+    <li>Verify that <code>CMakeLists.txt</code> is in the root of your cloned repository</li>
+</ol>
+
+<h4>Tests fail to build</h4>
+<ul>
+    <li>Google Test is fetched automatically via CMake&#x2019;s <code>FetchContent</code> &mdash; make sure you have an internet connection during the first build</li>
+    <li>Do <strong>not</strong> modify header files in the <code>include/</code> folder</li>
+</ul>
+
+<h4>Running the Program</h4>
+<ol>
+    <li>In Visual Studio, select <code>lab5-student-directory.exe</code> as the startup item from the dropdown</li>
+    <li>Press <strong>Ctrl+F5</strong> to run without debugging</li>
+    <li>You should see output from each section as you complete the TODOs</li>
+</ol>
+
+<div style="padding: 14px 18px; border-radius: 4px; margin-bottom: 16px; background-color: #dff0d8; border: 1px solid #d6e9c6; color: #3c763d;">
+    <strong>Tip:</strong> Look for the <code>// ! DISCUSSION:</code> comments in each file &mdash; these explain the &#x201C;why&#x201D; behind each concept. The <code>// ? SEE DIAGRAM:</code> comments point you to visual aids in the <code>images/</code> folder.
+</div>
